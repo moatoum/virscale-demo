@@ -36,8 +36,6 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=10000
 ENV HOST=0.0.0.0
-ENV REMIX_SERVE_HOST=0.0.0.0
-ENV REMIX_SERVE_PORT=10000
 
 # Install curl for healthcheck
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
@@ -49,9 +47,6 @@ COPY --from=build --chown=bolt:bolt /app/build /app/build
 COPY --from=build --chown=bolt:bolt /app/node_modules /app/node_modules
 COPY --from=build --chown=bolt:bolt /app/package.json /app/package.json
 
-# Install remix-serve for production
-RUN npm install @remix-run/serve --save
-
 # Switch to non-root user
 USER bolt
 
@@ -61,8 +56,8 @@ EXPOSE 10000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -fsS http://localhost:10000/ || exit 1
 
-# Start the Remix server
-CMD ["npm", "run", "start"]
+# Start the Remix server directly
+CMD ["node", "build/server/index.js"]
 
 
 # ---- runtime stage (legacy alias) ----
