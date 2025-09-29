@@ -10,6 +10,7 @@ import { createScopedLogger } from '~/utils/logger';
 import { createFilesContext, extractPropertiesFromMessage } from './utils';
 import { discussPrompt } from '~/lib/common/prompts/discuss-prompt';
 import type { DesignScheme } from '~/types/design-scheme';
+import { chatStore } from '~/lib/stores/chat';
 
 export type Messages = Message[];
 
@@ -82,13 +83,19 @@ export async function streamText(props: {
   } = props;
   let currentModel = DEFAULT_MODEL;
   let currentProvider = DEFAULT_PROVIDER.name;
+  let customMaxTokens: number | undefined;
   let processedMessages = messages.map((message) => {
     const newMessage = { ...message };
 
     if (message.role === 'user') {
-      const { model, provider, content } = extractPropertiesFromMessage(message);
+      const { model, provider, content, maxTokens } = extractPropertiesFromMessage(message);
       currentModel = model;
       currentProvider = provider;
+
+      if (maxTokens) {
+        customMaxTokens = maxTokens;
+      }
+
       newMessage.content = sanitizeText(content);
     } else if (message.role == 'assistant') {
       newMessage.content = sanitizeText(message.content);
@@ -142,8 +149,9 @@ export async function streamText(props: {
 
   const dynamicMaxTokens = modelDetails ? getCompletionTokenLimit(modelDetails) : Math.min(MAX_TOKENS, 16384);
 
-  // Use model-specific limits directly - no artificial cap needed
-  const safeMaxTokens = dynamicMaxTokens;
+  // Use maxTokens from chat store (mode selector) if available, then custom maxTokens from message, then model-specific limits
+  const chatStoreMaxTokens = chatStore.get().maxTokens;
+  const safeMaxTokens = chatStoreMaxTokens || customMaxTokens || dynamicMaxTokens;
 
   logger.info(
     `Token limits for model ${modelDetails.name}: maxTokens=${safeMaxTokens}, maxTokenAllowed=${modelDetails.maxTokenAllowed}, maxCompletionTokens=${modelDetails.maxCompletionTokens}`,

@@ -65,30 +65,18 @@ export function ImportButtons(importChat: ((description: string, messages: Messa
               input?.click();
             }}
             variant="default"
-            size="lg"
+            size="sm"
             className={classNames(
-              'gap-2 bg-bolt-elements-background-depth-1',
-              'text-bolt-elements-textPrimary',
-              'hover:bg-bolt-elements-background-depth-2',
-              'border border-bolt-elements-borderColor',
-              'h-10 px-4 py-2 min-w-[120px] justify-center',
-              'transition-all duration-200 ease-in-out',
+              'bg-transparent enabled:hover:text-bolt-elements-item-contentActive',
+              'enabled:hover:bg-bolt-elements-item-backgroundActive disabled:cursor-not-allowed',
+              'focus:outline-none transition-all',
+              'rounded-md p-1',
             )}
+            title="Import Chat"
           >
-            <span className="i-ph:upload-simple w-4 h-4" />
-            Import Chat
+            <span className="i-ph:upload-simple w-5 h-5" />
           </Button>
-          <ImportFolderButton
-            importChat={importChat}
-            className={classNames(
-              'gap-2 bg-bolt-elements-background-depth-1',
-              'text-bolt-elements-textPrimary',
-              'hover:bg-bolt-elements-background-depth-2',
-              'border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)]',
-              'h-10 px-4 py-2 min-w-[120px] justify-center',
-              'transition-all duration-200 ease-in-out rounded-lg',
-            )}
-          />
+          <ImportFolderButton importChat={importChat} />
         </div>
       </div>
     </div>

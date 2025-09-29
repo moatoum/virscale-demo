@@ -29,31 +29,39 @@ RUN NODE_OPTIONS=--max-old-space-size=4096 pnpm run build
 RUN pnpm prune --prod --ignore-scripts
 
 
-# ---- runtime stage ----
-FROM node:22-bookworm-slim AS runtime
+# ---- production runtime stage ----
+FROM node:22-bookworm-slim AS bolt-ai-production
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=10000
 ENV HOST=0.0.0.0
 
-# Install curl so Coolify’s healthcheck works inside the image
+# Install curl for healthcheck
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && groupadd -r bolt && useradd -r -g bolt bolt
 
 # Copy only what we need to run
-COPY --from=build /app/build /app/build
-COPY --from=build /app/node_modules /app/node_modules
-COPY --from=build /app/package.json /app/package.json
+COPY --from=build --chown=bolt:bolt /app/build /app/build
+COPY --from=build --chown=bolt:bolt /app/node_modules /app/node_modules
+COPY --from=build --chown=bolt:bolt /app/package.json /app/package.json
 
-EXPOSE 3000
+# Switch to non-root user
+USER bolt
 
-# Healthcheck for Coolify
-HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=5 \
-  CMD curl -fsS http://localhost:3000/ || exit 1
+EXPOSE 10000
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -fsS http://localhost:10000/ || exit 1
 
 # Start the Remix server
-CMD ["node", "build/server/index.js"]
+CMD ["npm", "run", "start"]
+
+
+# ---- runtime stage (legacy alias) ----
+FROM bolt-ai-production AS runtime
 
 
 # ---- development stage ----

@@ -206,11 +206,15 @@ export const ModelSelector = ({
   }, [modelList, provider?.name, showFreeModelsOnly, debouncedModelSearchQuery]);
 
   const filteredProviders = useMemo(() => {
+    // Filter to only show OpenAI, Anthropic, and Google providers
+    const allowedProviders = ['OpenAI', 'Anthropic', 'Google'];
+    const baseFilteredProviders = providerList.filter((provider) => allowedProviders.includes(provider.name));
+
     if (!debouncedProviderSearchQuery) {
-      return providerList;
+      return baseFilteredProviders;
     }
 
-    return providerList
+    return baseFilteredProviders
       .map((provider) => {
         const match = fuzzyMatch(debouncedProviderSearchQuery, provider.name);
         return {

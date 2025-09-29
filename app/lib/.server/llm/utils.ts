@@ -1,5 +1,5 @@
 import { type Message } from 'ai';
-import { DEFAULT_MODEL, DEFAULT_PROVIDER, MODEL_REGEX, PROVIDER_REGEX } from '~/utils/constants';
+import { DEFAULT_MODEL, DEFAULT_PROVIDER, MODEL_REGEX, PROVIDER_REGEX, MAX_TOKENS_REGEX } from '~/utils/constants';
 import { IGNORE_PATTERNS, type FileMap } from './constants';
 import ignore from 'ignore';
 import type { ContextAnnotation } from '~/types/context';
@@ -8,6 +8,7 @@ export function extractPropertiesFromMessage(message: Omit<Message, 'id'>): {
   model: string;
   provider: string;
   content: string;
+  maxTokens?: number;
 } {
   const textContent = Array.isArray(message.content)
     ? message.content.find((item) => item.type === 'text')?.text || ''
@@ -15,6 +16,7 @@ export function extractPropertiesFromMessage(message: Omit<Message, 'id'>): {
 
   const modelMatch = textContent.match(MODEL_REGEX);
   const providerMatch = textContent.match(PROVIDER_REGEX);
+  const maxTokensMatch = textContent.match(MAX_TOKENS_REGEX);
 
   /*
    * Extract model
@@ -28,20 +30,26 @@ export function extractPropertiesFromMessage(message: Omit<Message, 'id'>): {
    */
   const provider = providerMatch ? providerMatch[1] : DEFAULT_PROVIDER.name;
 
+  /*
+   * Extract maxTokens
+   * const maxTokensMatch = message.content.match(MAX_TOKENS_REGEX);
+   */
+  const maxTokens = maxTokensMatch ? parseInt(maxTokensMatch[1], 10) : undefined;
+
   const cleanedContent = Array.isArray(message.content)
     ? message.content.map((item) => {
         if (item.type === 'text') {
           return {
             type: 'text',
-            text: item.text?.replace(MODEL_REGEX, '').replace(PROVIDER_REGEX, ''),
+            text: item.text?.replace(MODEL_REGEX, '').replace(PROVIDER_REGEX, '').replace(MAX_TOKENS_REGEX, ''),
           };
         }
 
         return item; // Preserve image_url and other types as is
       })
-    : textContent.replace(MODEL_REGEX, '').replace(PROVIDER_REGEX, '');
+    : textContent.replace(MODEL_REGEX, '').replace(PROVIDER_REGEX, '').replace(MAX_TOKENS_REGEX, '');
 
-  return { model, provider, content: cleanedContent };
+  return { model, provider, content: cleanedContent, maxTokens };
 }
 
 export function simplifyBoltActions(input: string): string {

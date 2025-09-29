@@ -1,19 +1,22 @@
 {
-  "name": "bolt",
-  "description": "An AI Agent",
+  "name": "virscale",
+  "description": "AI-Powered Development Platform",
   "private": true,
   "license": "MIT",
   "sideEffects": false,
   "type": "module",
   "version": "1.0.0",
   "author": {
-    "name": "bolt.diy team",
-    "email": "maintainers@bolt.diy"
+    "name": "Virscale team",
+    "email": "maintainers@virscale.com"
   },
   "scripts": {
     "deploy": "npm run build && wrangler pages deploy",
+    "deploy:vercel": "vercel --prod",
     "build": "remix vite:build",
+    "build:vercel": "remix vite:build --config vite.vercel.config.ts",
     "dev": "node pre-start.cjs  && remix vite:dev",
+    "dev:vercel": "remix vite:dev --config vite.vercel.config.ts",
     "test": "vitest --run",
     "test:watch": "vitest",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint app",
@@ -74,6 +77,7 @@
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
     "@iconify-json/svg-spinners": "^1.2.1",
+    "@iconify-json/tabler": "^1.2.23",
     "@lezer/highlight": "^1.2.1",
     "@modelcontextprotocol/sdk": "^1.15.0",
     "@nanostores/react": "^0.7.3",
@@ -98,6 +102,7 @@
     "@remix-run/cloudflare-pages": "^2.15.2",
     "@remix-run/node": "^2.15.2",
     "@remix-run/react": "^2.15.2",
+    "@remix-run/vercel": "^1.19.3",
     "@tanstack/react-virtual": "^3.13.0",
     "@types/react-beautiful-dnd": "^13.1.8",
     "@uiw/codemirror-theme-vscode": "^4.23.6",

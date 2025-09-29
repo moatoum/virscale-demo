@@ -169,23 +169,17 @@ ${escapeBoltTags(file.content)}
         }}
         title="Clone a repo"
         variant="default"
-        size="lg"
+        size="sm"
         className={classNames(
-          'gap-2 bg-bolt-elements-background-depth-1',
-          'text-bolt-elements-textPrimary',
-          'hover:bg-bolt-elements-background-depth-2',
-          'border border-bolt-elements-borderColor',
-          'h-10 px-4 py-2 min-w-[120px] justify-center',
-          'transition-all duration-200 ease-in-out',
+          'bg-transparent enabled:hover:text-bolt-elements-item-contentActive',
+          'enabled:hover:bg-bolt-elements-item-backgroundActive disabled:cursor-not-allowed',
+          'focus:outline-none transition-all',
+          'rounded-md p-1',
           className,
         )}
         disabled={!ready || loading}
       >
-        Clone a repo
-        <div className="flex items-center gap-1 ml-2">
-          <Github className="w-4 h-4" />
-          <GitBranch className="w-4 h-4" />
-        </div>
+        <Github className="w-5 h-5" />
       </Button>
 
       {/* Provider Selection Dialog */}

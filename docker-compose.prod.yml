@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  virscale:
+    image: virscale-ai:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: bolt-ai-production
+    container_name: virscale-ai
+    restart: unless-stopped
+    ports:
+      - '5173:5173'
+    env_file:
+      - '.env.local'
+    environment:
+      - NODE_ENV=production
+      - PORT=5173
+      - HOST=0.0.0.0
+    volumes:
+      # Optional: persist logs
+      - ./logs:/app/logs
+    networks:
+      - virscale-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      # Traefik labels if you're using it
+      - "traefik.enable=true"
+      - "traefik.http.routers.virscale.rule=Host(`your-domain.com`)"
+      - "traefik.http.routers.virscale.tls=true"
+      - "traefik.http.routers.virscale.tls.certresolver=letsencrypt"
+
+networks:
+  virscale-net:
+    driver: bridge
+
+# Optional: If you want to run Ollama locally
+# services:
+#   ollama:
+#     image: ollama/ollama:latest
+#     container_name: virscale-ollama
+#     restart: unless-stopped
+#     ports:
+#       - '11434:11434'
+#     volumes:
+#       - ollama-data:/root/.ollama
+#     networks:
+#       - virscale-net
+#
+# volumes:
+#   ollama-data:

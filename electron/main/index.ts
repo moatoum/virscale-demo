@@ -160,7 +160,7 @@ declare global {
         }
 
         const listen = await viteServer.listen();
-        global.__electron__ = electron;
+        (global as any).__electron__ = electron;
         viteServer.printUrls();
 
         return `http://localhost:${listen.config.server.port}`;

@@ -1,5 +1,7 @@
 import type { ModelInfo } from '~/lib/modules/llm/types';
 
+export type { ModelInfo };
+
 export type ProviderInfo = {
   staticModels: ModelInfo[];
   name: string;
