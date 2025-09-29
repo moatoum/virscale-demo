@@ -7,6 +7,7 @@ services:
     branch: main
     dockerfilePath: ./Dockerfile
     dockerContext: ./
+    dockerCommand: node build/server/index.js
     envVars:
       - key: NODE_ENV
         value: production

@@ -60,10 +60,6 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 CMD ["node", "build/server/index.js"]
 
 
-# ---- runtime stage (legacy alias) ----
-FROM bolt-ai-production AS runtime
-
-
 # ---- development stage ----
 FROM build AS development
 
@@ -98,3 +94,9 @@ ENV GROQ_API_KEY=${GROQ_API_KEY} \
 
 RUN mkdir -p /app/run
 CMD ["pnpm", "run", "dev", "--host"]
+
+# ---- production default stage ----
+FROM bolt-ai-production AS default
+
+# This ensures production is the default stage when no target is specified
+# The production CMD will be inherited: CMD ["node", "build/server/index.js"]
