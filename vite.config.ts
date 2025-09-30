@@ -19,7 +19,7 @@ export default defineConfig((config) => {
     build: {
       target: 'esnext',
       minify: false, // Temporarily disable minification to see actual errors
-      sourcemap: true,
+      sourcemap: false,
     },
     plugins: [
       nodePolyfills({
