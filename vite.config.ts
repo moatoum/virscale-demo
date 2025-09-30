@@ -18,7 +18,7 @@ export default defineConfig((config) => {
     },
     build: {
       target: 'esnext',
-      minify: false, // Temporarily disable minification to see actual errors
+      minify: true,
       sourcemap: false,
     },
     plugins: [
