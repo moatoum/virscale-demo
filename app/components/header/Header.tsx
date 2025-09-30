@@ -17,6 +17,7 @@ export function Header() {
           'border-transparent': !chat.started,
           'border-bolt-elements-borderColor': chat.started,
         })}
+        suppressHydrationWarning
       >
         {/* Powered by section - absolutely positioned */}
         <div className="absolute top-1/2 -translate-y-1/2 right-4 flex items-center gap-2 text-sm text-bolt-elements-textSecondary opacity-80 z-10">
@@ -31,8 +32,8 @@ export function Header() {
               src="/yotta-logo.png"
               alt="Yotta Solutions"
               className={classNames('h-6 w-auto inline-block filter', {
-                invert: theme === 'dark',
-                '': theme === 'light',
+                invert: theme === 'light',
+                '': theme === 'dark',
               })}
             />
           </a>
@@ -45,8 +46,8 @@ export function Header() {
               src="/logo-light-styled.png"
               alt="Virscale"
               className={classNames('w-[90px] inline-block filter', {
-                invert: theme === 'light',
-                '': theme === 'dark',
+                invert: theme === 'dark',
+                '': theme === 'light',
               })}
             />
           </a>
