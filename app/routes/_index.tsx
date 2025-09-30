@@ -1,5 +1,4 @@
 import { json, type MetaFunction } from '@remix-run/cloudflare';
-import { ClientOnly } from 'remix-utils/client-only';
 import { Chat } from '~/components/chat/Chat.client';
 import { Header } from '~/components/header/Header';
 import BackgroundRays from '~/components/ui/BackgroundRays';
@@ -13,17 +12,6 @@ export const meta: MetaFunction = () => {
 
 export const loader = () => json({});
 
-function ChatFallback() {
-  return (
-    <div className="flex items-center justify-center h-full w-full">
-      <div className="flex flex-col items-center gap-4">
-        <div className="i-svg-spinners:90-ring-with-bg text-4xl text-bolt-elements-loader-progress" />
-        <p className="text-bolt-elements-textSecondary">Loading...</p>
-      </div>
-    </div>
-  );
-}
-
 /**
  * Landing page component for Virscale
  * Note: Settings functionality should ONLY be accessed through the sidebar menu.
@@ -35,7 +23,7 @@ export default function Index() {
     <div className="flex flex-col h-full w-full bg-bolt-elements-background-depth-1">
       <BackgroundRays />
       <Header />
-      <ClientOnly fallback={<ChatFallback />}>{() => <Chat />}</ClientOnly>
+      <Chat />
     </div>
   );
 }
