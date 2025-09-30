@@ -1,14 +1,19 @@
 [build]
   command = "NODE_OPTIONS='--max-old-space-size=4096' pnpm run build"
   publish = "build/client"
+  functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "20"
-  NPM_FLAGS = "--legacy-peer-deps"
 
-[[edge_functions]]
-  function = "server"
-  path = "/*"
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/server"
+  status = 200
+
+[functions]
+  external_node_modules = ["@remix-run/node"]
+  node_bundler = "esbuild"
 
 [[headers]]
   for = "/*"
