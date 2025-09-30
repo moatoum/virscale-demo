@@ -1,4 +1,5 @@
 import { json, type MetaFunction } from '@remix-run/cloudflare';
+import { ClientOnly } from 'remix-utils/client-only';
 import { Chat } from '~/components/chat/Chat.client';
 import { Header } from '~/components/header/Header';
 import BackgroundRays from '~/components/ui/BackgroundRays';
@@ -23,7 +24,7 @@ export default function Index() {
     <div className="flex flex-col h-full w-full bg-bolt-elements-background-depth-1">
       <BackgroundRays />
       <Header />
-      <Chat />
+      <ClientOnly fallback={<div className="flex-1" />}>{() => <Chat />}</ClientOnly>
     </div>
   );
 }
