@@ -627,13 +627,9 @@ export const ChatImpl = memo(
       Cookies.set('selectedProvider', newProvider.name, { expires: 30 });
     };
 
-    // Show loading state if not ready
-    if (!ready) {
-      return <BaseChat chatStarted={false} isStreaming={false} />;
-    }
-
     return (
       <BaseChat
+        key={ready ? 'ready' : 'loading'}
         ref={animationScope}
         textareaRef={textareaRef}
         input={input}
