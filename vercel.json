@@ -1,22 +1,4 @@
 {
-  "framework": null,
-  "buildCommand": "pnpm run build:vercel",
-  "installCommand": "pnpm install",
-  "outputDirectory": "build/client",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/index.js"
-    }
-  ],
-  "functions": {
-    "api/index.js": {
-      "runtime": "nodejs20.x",
-      "maxDuration": 30
-    }
-  },
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "regions": ["iad1"]
+  "buildCommand": "pnpm run build",
+  "installCommand": "pnpm install"
 }
