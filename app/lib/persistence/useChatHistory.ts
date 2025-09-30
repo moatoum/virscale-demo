@@ -34,14 +34,33 @@ export interface ChatHistoryItem {
 
 const persistenceEnabled = !import.meta.env.VITE_DISABLE_PERSISTENCE;
 
-// Initialize db only on client-side to avoid SSR issues
+// Lazy initialization of database - initialized on first use to avoid SSR issues
+let dbInstance: IDBDatabase | undefined | null = null; // null = not yet initialized
 let dbPromise: Promise<IDBDatabase | undefined> | undefined;
 
-if (typeof window !== 'undefined' && persistenceEnabled) {
-  dbPromise = openDatabase();
+async function getDb(): Promise<IDBDatabase | undefined> {
+  // If already initialized (even if undefined), return it
+  if (dbInstance !== null) {
+    return dbInstance;
+  }
+
+  // Server-side: immediately return undefined
+  if (typeof window === 'undefined' || !persistenceEnabled) {
+    dbInstance = undefined;
+    return undefined;
+  }
+
+  // Client-side: initialize if not already doing so
+  if (!dbPromise) {
+    dbPromise = openDatabase();
+  }
+
+  dbInstance = await dbPromise;
+  return dbInstance;
 }
 
-export const db = dbPromise ? await dbPromise : undefined;
+// Export as undefined initially to avoid top-level await
+export let db: IDBDatabase | undefined = undefined;
 
 export const chatId = atom<string | undefined>(undefined);
 export const description = atom<string | undefined>(undefined);
@@ -57,17 +76,21 @@ export function useChatHistory() {
   const [urlId, setUrlId] = useState<string | undefined>();
 
   useEffect(() => {
-    if (!db) {
-      setReady(true);
+    // Initialize database on first render (client-side only)
+    getDb().then((database) => {
+      db = database;
 
-      if (persistenceEnabled) {
-        const error = new Error('Chat persistence is unavailable');
-        logStore.logError('Chat persistence initialization failed', error);
-        toast.error('Chat persistence is unavailable');
+      if (!db) {
+        setReady(true);
+
+        if (persistenceEnabled) {
+          const error = new Error('Chat persistence is unavailable');
+          logStore.logError('Chat persistence initialization failed', error);
+          toast.error('Chat persistence is unavailable');
+        }
+
+        return;
       }
-
-      return;
-    }
 
     if (mixedId) {
       Promise.all([
@@ -198,11 +221,12 @@ ${value.content}
           logStore.logError('Failed to load chat messages or snapshot', error); // Updated error message
           toast.error('Failed to load chat: ' + error.message); // More specific error
         });
-    } else {
-      // Handle case where there is no mixedId (e.g., new chat)
-      setReady(true);
-    }
-  }, [mixedId, db, navigate, searchParams]); // Added db, navigate, searchParams dependencies
+      } else {
+        // Handle case where there is no mixedId (e.g., new chat)
+        setReady(true);
+      }
+    }); // Close getDb().then()
+  }, [mixedId, navigate, searchParams]); // Removed db dependency as it's now initialized inside
 
   const takeSnapshot = useCallback(
     async (chatIdx: string, files: FileMap, _chatId?: string | undefined, chatSummary?: string) => {
