@@ -12,7 +12,7 @@
   status = 200
 
 [functions]
-  external_node_modules = ["@remix-run/node"]
+  included_files = ["build/server/**", "build/client/**"]
   node_bundler = "esbuild"
 
 [[headers]]
