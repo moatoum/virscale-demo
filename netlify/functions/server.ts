@@ -1,8 +1,9 @@
-import { createRequestHandler } from '@remix-run/netlify';
+// @ts-ignore
+import { createRequestHandler } from '@netlify/remix-adapter';
 // @ts-ignore
 import * as build from '../../build/server/index.js';
 
 export const handler = createRequestHandler({
   build,
-  mode: process.env.NODE_ENV,
+  getLoadContext: async () => ({}),
 });
