@@ -13,7 +13,7 @@
   "scripts": {
     "deploy": "npm run build && wrangler pages deploy",
     "deploy:vercel": "vercel --prod",
-    "build": "remix vite:build",
+    "build": "npx remix vite:build",
     "build:vercel": "remix vite:build --config vite.vercel.config.ts",
     "dev": "node pre-start.cjs  && remix vite:dev",
     "dev:vercel": "remix vite:dev --config vite.vercel.config.ts",
