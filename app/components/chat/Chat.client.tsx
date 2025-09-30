@@ -47,15 +47,14 @@ export function Chat() {
 
   return (
     <>
-      {ready && (
-        <ChatImpl
-          description={title}
-          initialMessages={initialMessages}
-          exportChat={exportChat}
-          storeMessageHistory={storeMessageHistory}
-          importChat={importChat}
-        />
-      )}
+      <ChatImpl
+        ready={ready}
+        description={title}
+        initialMessages={initialMessages}
+        exportChat={exportChat}
+        storeMessageHistory={storeMessageHistory}
+        importChat={importChat}
+      />
       <ToastContainer
         closeButton={({ closeToast }) => {
           return (
@@ -107,6 +106,7 @@ const processSampledMessages = createSampler(
 );
 
 interface ChatProps {
+  ready: boolean;
   initialMessages: Message[];
   storeMessageHistory: (messages: Message[]) => Promise<void>;
   importChat: (description: string, messages: Message[]) => Promise<void>;
@@ -115,7 +115,7 @@ interface ChatProps {
 }
 
 export const ChatImpl = memo(
-  ({ description, initialMessages, storeMessageHistory, importChat, exportChat }: ChatProps) => {
+  ({ ready, description, initialMessages, storeMessageHistory, importChat, exportChat }: ChatProps) => {
     useShortcuts();
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -626,6 +626,11 @@ export const ChatImpl = memo(
       setProvider(newProvider);
       Cookies.set('selectedProvider', newProvider.name, { expires: 30 });
     };
+
+    // Show loading state if not ready
+    if (!ready) {
+      return <BaseChat chatStarted={false} isStreaming={false} />;
+    }
 
     return (
       <BaseChat
